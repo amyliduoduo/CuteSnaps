@@ -1,0 +1,54 @@
+/* Homepage.module.css */
+
+.container {
+    background-color: #FCF7E9; /* your beige */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  
+  .inner {
+    width: 100%;
+    max-width: 1440px;
+    padding-top: 3rem;
+    position: relative;
+  }
+  
+  .titleImg {
+    display: block;
+    margin: 0 auto 1.5rem;
+    width: 360px;
+    max-width: 90%;
+  }
+  
+  .boothWrapper {
+    position: relative;
+    width: 540px;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+  
+  .boothImg {
+    width: 100%;
+    height: auto;
+  }
+  
+  .startButton {
+    position: absolute;
+    left: 105px;
+    bottom: 108px;
+    width: 100px;
+    height: 40px;
+    background-color: #FFE5E6;
+    border: 2px solid #75BDF8;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .startButton:hover {
+    background-color: #FFD9DE;
+  }
+  

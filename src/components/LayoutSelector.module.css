@@ -1,0 +1,142 @@
+/* src/components/LayoutSelector.module.css */
+
+.container {
+    background-color: #FCF7E9;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+  
+  .titleImg {
+    display: block;
+    margin: 0 auto 2rem;
+    width: 240px;
+    max-width: 80%;
+  }
+  
+  .grid {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-bottom: 2rem;
+  }
+  
+  .option {
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  
+  .selected {
+    border: 4px solid #d81b60;
+  }
+  
+  /* 2-pose */
+  .box2 {
+    width: 168px;
+    height: 356px;
+    background-color: #bce1ff;
+    padding: 15px;
+  }
+  
+  .box2 .photo {
+    width: 170px;
+    height: 105px;
+    background-color: white;
+    margin-bottom: 15px;
+    border-radius: 4px;
+  }
+  
+  /* 3-pose */
+  .box3 {
+    width: 151px;
+    height: 391px;
+    background-color: #ffe5e6;
+    padding: 18px;
+  }
+  
+  .box3 .photo {
+    width: 150px;
+    height: 85px;
+    background-color: white;
+    margin-bottom: 18px;
+    border-radius: 4px;
+  }
+  
+  /* 4-pose */
+  .box4 {
+    width: 141px;
+    height: 435px;
+    background-color: #cacaf5;
+    padding: 18px;
+  }
+  
+  .box4 .photo {
+    width: 140px;
+    height: 75px;
+    background-color: white;
+    margin-bottom: 18px;
+    border-radius: 4px;
+  }
+  
+  /* 6-pose (grid) */
+  .box6 {
+    width: 214px;
+    height: 316px;
+    background-color: #d5eacb;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 70.5px;
+    gap: 12px;
+  }
+  
+  /* Individual photo cells in grid get their own style */
+  .box6 .photo {
+    background-color: white;
+    border-radius: 4px;
+  }
+  
+  /* Upload / Take Photo controls */
+  .controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .control {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #ccc;
+    background: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .control.selected {
+    border-color: #d81b60;
+    background-color: #e7e6e4;
+  }
+  
+  /* Next button */
+  .next {
+    padding: 0.75rem 2rem;
+    background-color: #e3e3f7;
+    border: none;
+    font-size: 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .next:hover {
+    background-color: #d3d3f7;
+  }
+  
+  

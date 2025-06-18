@@ -1,0 +1,19 @@
+.photo-frame-container {
+    padding: 2rem;
+  }
+  
+  .preview-frame {
+    border: 10px solid #f48fb1;
+    margin-top: 1rem;
+    display: inline-block;
+    padding: 0.5rem;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  .preview-image {
+    width: 300px;
+    border-radius: 8px;
+  }
+  
