@@ -1,4 +1,4 @@
-/* Container & Layout */
+/* Page container */
 .capture-sequence-container {
     background: #FAF3E0;
     padding: 2rem;
@@ -9,45 +9,47 @@
     box-sizing: border-box;
   }
   
-  /* Title / Countdown Text */
-  .sequence-title {
-    font-family: serif;
-    font-size: 1.25rem;
-    color: #333;
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-  
-  /* Preview Frame */
-  .preview-wrapper {
+  /* Larger preview frame */
+  .sequence-preview-wrapper {
     position: relative;
     width: 100%;
-    max-width: 480px;
+    max-width: 800px;
     aspect-ratio: 4/3;
     background: #000;
     border: 2px solid #000;
     border-radius: 1rem;
     overflow: hidden;
+    margin-bottom: 1.5rem;
   }
   
-  /* Video Element */
+  /* Video element with filter support */
   .preview {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
   
-  /* Filter Classes */
-  .preview.none       { filter: none; }
-  .preview.bw         { filter: grayscale(1) contrast(1.2); }
-  .preview.sepia      { filter: sepia(0.8) contrast(0.9) brightness(1.1); }
-  .preview.pastel     { filter: saturate(0.6) hue-rotate(330deg) brightness(1.05); }
-  .preview.vivid      { filter: saturate(1.5); }
-  .preview.pop        { filter: saturate(1.3) contrast(1.4); }
-  .preview.neon       { filter: hue-rotate(200deg) saturate(1.4) contrast(1.2); }
-  .preview.vintage    { filter: sepia(0.4) contrast(0.8) brightness(1.1); }
+  /* Centered overlay for countdown/text */
+  .sequence-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   
-  /* Dot Indicator */
+  .sequence-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 8px rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.4);
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    text-align: center;
+  }
+  
+  /* Dot indicator bar */
   .step-indicator {
     display: flex;
     gap: 0.5rem;
@@ -61,6 +63,8 @@
     border-radius: 50%;
     transition: background-color 0.2s;
   }
+  
   .dot.active {
-    background: #4caf50; /* green highlight */
-  }  
+    background: #4caf50;
+  }
+  

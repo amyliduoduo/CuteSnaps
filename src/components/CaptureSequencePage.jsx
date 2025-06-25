@@ -9,11 +9,11 @@ export default function CaptureSequencePage() {
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [stepIndex, setStepIndex] = useState(0);          // current photo index
-  const [countdown, setCountdown] = useState(null);       // countdown value
-  const [photos, setPhotos] = useState([]);               // captured dataURLs
+  const [stepIndex, setStepIndex] = useState(0);
+  const [countdown, setCountdown] = useState(null);
+  const [photos, setPhotos] = useState([]);
 
-  // Start camera on mount
+  // 1) Start camera on mount
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -34,28 +34,24 @@ export default function CaptureSequencePage() {
     };
   }, []);
 
-  // Trigger each capture cycle when stepIndex changes
+  // 2) Kickoff each capture cycle
   useEffect(() => {
     if (stepIndex < layout) {
-      // initialize countdown before snapshot
       setCountdown(Number(timer));
     } else {
-      // all done, navigate to review
-      navigate('/review', { state: { photos, layout } });
+      navigate('/edit', { state: { photos, layout } });
     }
   }, [stepIndex]);
 
-  // Countdown timer effect
+  // 3) Countdown then snapshot
   useEffect(() => {
     if (countdown == null) return;
     const id = setInterval(() => {
       setCountdown(c => {
         if (c <= 1) {
           clearInterval(id);
-          // take snapshot
           takeSnapshot();
-          // move to next step after a brief pause
-          setTimeout(() => setStepIndex(i => i + 1), 500);
+          setTimeout(() => setStepIndex(i => i + 1), 1000);
           return null;
         }
         return c - 1;
@@ -64,28 +60,22 @@ export default function CaptureSequencePage() {
     return () => clearInterval(id);
   }, [countdown]);
 
+  // 4) Draw video frame + filter to canvas
   function takeSnapshot() {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
-    const ctx = canvas.getContext('2d');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    // draw video frame with filter
+    const ctx = canvas.getContext('2d');
     ctx.filter = getComputedStyle(video).filter;
     ctx.drawImage(video, 0, 0);
-    const dataUrl = canvas.toDataURL('image/png');
-    setPhotos(p => [...p, dataUrl]);
+    setPhotos(p => [...p, canvas.toDataURL('image/png')]);
   }
 
   return (
     <div className="capture-sequence-container">
-      <h2 className="sequence-title">
-        {countdown != null
-          ? countdown
-          : `Get ready for photo ${stepIndex + 1} of ${layout}`}
-      </h2>
-      <div className="preview-wrapper">
+      <div className="sequence-preview-wrapper">
         <video
           ref={videoRef}
           className={`preview ${filter}`}
@@ -93,9 +83,18 @@ export default function CaptureSequencePage() {
           muted
           playsInline
         />
+        <div className="sequence-overlay">
+          <span className="sequence-title">
+            {countdown != null
+              ? countdown
+              : `Get ready for photo ${stepIndex + 1} of ${layout}`}
+          </span>
+        </div>
       </div>
-      {/* offscreen canvas for snapshots */}
+
+      {/* Hidden canvas for snapshots */}
       <canvas ref={canvasRef} style={{ display: 'none' }} />
+
       <div className="step-indicator">
         {Array.from({ length: layout }).map((_, i) => (
           <span

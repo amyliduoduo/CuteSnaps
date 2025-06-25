@@ -6,7 +6,6 @@ export default function PhotocapturePage() {
   const videoRef = useRef(null);
   const [timer, setTimer] = useState(null);
   const [filter, setFilter] = useState('none');
-  const [count, setCount] = useState(null);
   const navigate = useNavigate();
   const { layout, mode } = useLocation().state; // picked in LayoutSelector
 
@@ -32,27 +31,12 @@ export default function PhotocapturePage() {
     };
   }, []);
 
-  // Start countdown and then proceed
-  function startCountdown() {
-    const initial = parseInt(timer, 10);
-    setCount(initial);
-    const id = setInterval(() => {
-      setCount(prev => {
-        if (prev <= 1) {
-          clearInterval(id);
-          setCount(null);
-          // navigate into the multi-shot sequence
-          navigate('/sequence', {
-            state: { layout, timer, filter }
-          });
-          return null;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }
 
   const isReady = Boolean(timer) && Boolean(filter);
+  function handleNext() {
+    navigate('/sequence', { state: { layout, timer, filter } });
+  }
+
 
   return (
     <div className="photocapture-container">
@@ -114,18 +98,11 @@ export default function PhotocapturePage() {
         <button
           className={`btn next ${isReady ? '' : 'disabled'}`}
           disabled={!isReady}
-          onClick={startCountdown}
+          onClick={handleNext}
         >
           Next →
         </button>
       </div>
-
-      {/* Countdown overlay */}
-      {count != null && (
-        <div className="countdown-overlay">
-          {count}
-        </div>
-      )}
     </div>
   );
 }

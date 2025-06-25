@@ -5,6 +5,7 @@ import Homepage         from './components/Homepage';
 import LayoutSelector   from './components/LayoutSelector';
 import PhotocapturePage from './components/PhotocapturePage';
 import CaptureSequencePage from './components/CaptureSequencePage';
+import EditPage from './components/EditPage'; 
 
 function App() {
   // this will receive the timer+filter settings from your capture page
@@ -20,6 +21,7 @@ function App() {
         <Route path="/layout"  element={<LayoutSelector />} />
         <Route path="/capture" element={<PhotocapturePage />} />
         <Route path="/sequence" element={<CaptureSequencePage />} />
+        <Route path="/edit" element={<EditPage />} />
       </Routes>
     </Router>
   );

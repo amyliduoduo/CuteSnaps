@@ -1,0 +1,214 @@
+/* EditPage.css */
+
+/* ─── Overall two‐column layout ─── */
+.edit-page {
+    display: flex;
+    min-height: 100vh;
+    background: #FAF3E0;
+    box-sizing: border-box;
+    font-family: 'Playfair Display', serif;
+  }
+  
+  /* ─── LEFT & RIGHT PANELS 50/50 ─── */
+  .edit-controls {
+    flex: 1;
+    max-width: 50%;
+    padding: 3rem 1rem 2rem;
+    background: #FFFFFF;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .edit-preview {
+    flex: 1;
+    max-width: 50%;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  /* ─── SVG HEADERS ─── */
+  .edit-quote {
+    width: 260px;
+    margin: 2rem auto 1rem;
+  }
+  .preview-quote {
+    width: 100px;
+    margin: 2rem auto 1rem;
+  }
+  
+  /* ─── Date Stamp Toggle ─── */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .toggle-row span {
+    font-size: 1rem;
+    color: #333;
+  }
+  .toggle-row .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+  }
+  .toggle-row .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .toggle-row .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 12px;
+    transition: 0.3s;
+  }
+  .toggle-row .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+  }
+  .toggle-row input:checked + .slider {
+    background-color: #CAC8FF;
+  }
+  .toggle-row input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+  
+  /* ─── Frame Color Buttons ─── */
+  .color-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+  }
+  .color-btn {
+    padding: 0.75rem;
+    border: none;
+    border-radius: 0.75rem;
+    font-family: 'Georgia', serif;
+    font-size: 0.9rem;
+    color: #333;
+    background: #F1EAD4;
+    box-shadow: inset 0 0 0 2px #E2D8B8;
+    cursor: pointer;
+    transition: box-shadow 0.2s, background 0.2s;
+  }
+  .color-btn.selected {
+    background: #CAC8FF;
+    box-shadow: inset 0 0 0 2px #8888FF;
+  }
+  .color-btn.custom-btn {
+    grid-column: span 2;
+  }
+  
+  /* ─── Emojis ─── */
+  .emoji-picker-react {
+    border: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    height: 250px !important;
+    overflow-y: auto;
+  }
+  
+  /* ─── Preview Frame ─── */
+  .preview-frame {
+    position: relative;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 0;
+    overflow: hidden;
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 0 6rem; /* extra bottom space for date */
+    gap: 1rem;
+  }
+  .shot {
+    width: 90%;
+    object-fit: cover;
+    background: #D3D3D3;
+    border-radius: 0;
+  }
+  
+  /* ─── Custom Resize Handles ─── */
+  .resize-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    display: none;
+    cursor: nwse-resize;
+    z-index: 10;
+  }
+  .top-left     { top: -5px; left: -5px; }
+  .top-right    { top: -5px; right: -5px; }
+  .bottom-left  { bottom: -5px; left: -5px; }
+  .bottom-right { bottom: -5px; right: -5px; }
+  .sticker-wrapper:hover .resize-handle {
+    display: block !important;
+  }
+  
+  /* ─── Delete Button ─── */
+  .sticker-delete-btn {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background: #FFF;
+    border: 1px solid #333;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+  }
+  .sticker-wrapper:hover .sticker-delete-btn {
+    display: flex !important;
+  }
+  
+  /* ─── Date Stamp Centered ─── */
+  .date-stamp {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #333;
+  }
+  
+  /* ─── Collect Button ─── */
+  .collect-btn {
+    padding: 0.75rem 2rem;
+    background: #CAC8FF;
+    color: #000;
+    border: none;
+    border-radius: 1rem;
+    font-family: 'Georgia', serif;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .collect-btn:hover {
+    background: #B0ABF5;
+  }
