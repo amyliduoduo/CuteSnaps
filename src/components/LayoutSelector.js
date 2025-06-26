@@ -1,23 +1,56 @@
-// src/components/LayoutSelector.js
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './LayoutSelector.module.css';
+import React, { useState, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import styles from './LayoutSelector.module.css'
 
 export default function LayoutSelector() {
-  const [selected, setSelected] = useState(null);
-  const [mode, setMode] = useState(null);
-  const layouts = [2, 3, 4, 6];
-  const isReady = selected !== null && mode !== null;
-  const navigate = useNavigate();
+  const [selected, setSelected] = useState(null)
+  const [mode, setMode] = useState(null)
+  const [uploadedFiles, setUploadedFiles] = useState([])
+  const navigate = useNavigate()
+  const fileInputRef = useRef(null)
+  const layouts = [2, 3, 4, 6]
 
-  function handleNext() {
-    // Navigate to capture page, passing layout and mode as state
-    navigate('/capture', { state: { layout: selected, mode } });
+  // 1) Handle image uploads
+  const handleFileChange = e => {
+     const files = Array.from(e.target.files)
+     const readers = files.map(file =>
+       new Promise(resolve => {
+         const reader = new FileReader()
+         reader.onload = () => resolve(reader.result)
+         reader.readAsDataURL(file)
+       })
+     )
+     Promise.all(readers).then(images => {
+       setUploadedFiles(prev => [...prev, ...images])
+       // clear input so selecting the same file again still fires
+       fileInputRef.current.value = null
+     })
+  }
+
+  // 2) Next button logic
+  const handleNext = () => {
+    if (!selected || !mode) return
+    if (mode === 'upload') {
+      // take only as many photos as the layout requires
+      const photos = uploadedFiles.slice(0, selected)
+      navigate('/edit', { state: { photos, layout: selected } })
+    } else {
+      navigate('/capture', { state: { layout: selected, filter: null } })
+    }
+  }
+
+  // enable Next only when ready
+  const canProceed = () => {
+    if (!selected || !mode) return false
+    if (mode === 'upload') {
+      return uploadedFiles.length >= selected
+    }
+    return true
   }
 
   return (
     <div className={styles.container}>
-      {/* SVG Title */}
+      {/* Title */}
       <img
         src="/assets/chooselayout.svg"
         alt="Choose your layout"
@@ -26,7 +59,7 @@ export default function LayoutSelector() {
 
       {/* Layout Options */}
       <div className={styles.grid}>
-        {layouts.map((n) => (
+        {layouts.map(n => (
           <div
             key={n}
             className={`${styles.option} ${selected === n ? styles.selected : ''}`}
@@ -41,7 +74,7 @@ export default function LayoutSelector() {
         ))}
       </div>
 
-      {/* Upload vs Take Photo */}
+      {/* Upload vs Camera Controls */}
       <div className={styles.controls}>
         <button
           className={`${styles.control} ${mode === 'upload' ? styles.selected : ''}`}
@@ -58,14 +91,46 @@ export default function LayoutSelector() {
         </button>
       </div>
 
+      {/* Upload Section */}
+      {mode === 'upload' && (
+        <div className={styles.uploadSection}>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
+          <button
+            className={styles.uploadBtn}
+            onClick={() => fileInputRef.current.click()}
+          >
+            Select {selected || ''} Photo{selected > 1 ? 's' : ''}
+          </button>
+          {uploadedFiles.length > 0 && (
+            <div className={styles.previewUploads}>
+              {uploadedFiles.slice(0, selected).map((src, idx) => (
+                <img
+                  key={idx}
+                  src={src}
+                  alt={`upload-${idx}`}
+                  className={styles.uploadPreview}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Next Button */}
       <button
-        className={`${styles.next} ${!isReady ? styles.disabled : ''}`}
+        className={styles.next}
+        disabled={!canProceed()}
         onClick={handleNext}
-        disabled={!isReady}
       >
         Next →
       </button>
     </div>
-  );
+  )
 }

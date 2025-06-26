@@ -3,26 +3,30 @@
 /* ─── Overall two‐column layout ─── */
 .edit-page {
     display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2rem;
     min-height: 100vh;
-    background: #FAF3E0;
+    background: #FCF7E9;
     box-sizing: border-box;
     font-family: 'Playfair Display', serif;
   }
   
-  /* ─── LEFT & RIGHT PANELS 50/50 ─── */
+  /* ─── LEFT & RIGHT PANELS 50/50, centered & spaced ─── */
   .edit-controls {
     flex: 1;
-    max-width: 50%;
+    max-width: 45%;
     padding: 3rem 1rem 2rem;
-    background: #FFFFFF;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    background: #FCF7E9;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 2rem;           /* extra vertical space between sections */
   }
+  
   .edit-preview {
     flex: 1;
-    max-width: 50%;
+    max-width: 45%;
+    background: #FCF7E9;
     padding: 2rem 1rem;
     display: flex;
     flex-direction: column;
@@ -33,10 +37,10 @@
   /* ─── SVG HEADERS ─── */
   .edit-quote {
     width: 260px;
-    margin: 2rem auto 1rem;
+    margin: 0 auto 2rem; /* centered within left panel */
   }
   .preview-quote {
-    width: 100px;
+    width: 100px;        /* keeps your “Preview” graphic smaller */
     margin: 2rem auto 1rem;
   }
   
@@ -50,73 +54,94 @@
     font-size: 1rem;
     color: #333;
   }
-  .toggle-row .switch {
+  .switch {
     position: relative;
     display: inline-block;
     width: 50px;
     height: 24px;
   }
-  .toggle-row .switch input {
+  .switch input {
     opacity: 0;
     width: 0;
     height: 0;
   }
-  .toggle-row .slider {
+  .slider {
     position: absolute;
     cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background-color: #ccc;
     border-radius: 12px;
     transition: 0.3s;
   }
-  .toggle-row .slider:before {
+  .slider:before {
     position: absolute;
     content: "";
-    height: 20px;
-    width: 20px;
-    left: 2px;
-    bottom: 2px;
-    background-color: white;
+    height: 20px; width: 20px;
+    left: 2px; bottom: 2px;
+    background-color: #fff;
     transition: 0.3s;
     border-radius: 50%;
   }
-  .toggle-row input:checked + .slider {
+  input:checked + .slider {
     background-color: #CAC8FF;
   }
-  .toggle-row input:checked + .slider:before {
+  input:checked + .slider:before {
     transform: translateX(26px);
   }
   
-  /* ─── Frame Color Buttons ─── */
+  /* ─── Section Spacing ─── */
+  .control-group {
+    margin-bottom: 2rem; /* more room under each label+control */
+  }
+  
+  /* ─── Frame-Color Buttons ─── */
   .color-options {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 0.75rem;
+    margin-top: 0.5rem;
   }
+  
   .color-btn {
-    padding: 0.75rem;
-    border: none;
+    position: relative;
+    padding: 0.65rem 0.9rem; 
+    background: #E9E1CD;          /* uniform beige background */
+    border: 2px solid #E2D8B8;
     border-radius: 0.75rem;
     font-family: 'Georgia', serif;
-    font-size: 0.9rem;
-    color: #333;
-    background: #F1EAD4;
-    box-shadow: inset 0 0 0 2px #E2D8B8;
+    font-size: 0.85rem;
     cursor: pointer;
-    transition: box-shadow 0.2s, background 0.2s;
+    transition: box-shadow 0.2s;
   }
+  
   .color-btn.selected {
     background: #CAC8FF;
     box-shadow: inset 0 0 0 2px #8888FF;
   }
-  .color-btn.custom-btn {
-    grid-column: span 2;
+  
+  /* Metallic silver should look just like the others */
+  .color-btn.metallic {
+    background: #E9E1CD;
   }
   
-  /* ─── Emojis ─── */
+  /* Custom spans entire row */
+  .color-btn.custom-btn {
+    grid-column: span 4;
+  }
+  
+  /* Native picker appears just below the button */
+  .color-btn .color-picker {
+    position: absolute;
+    bottom: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 24px;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  /* ─── Emoji Picker Panel ─── */
   .emoji-picker-react {
     border: none !important;
     box-shadow: none !important;
@@ -130,7 +155,7 @@
     position: relative;
     width: 90%;
     max-width: 400px;
-    border-radius: 0;
+    border-radius: 0;  /* sharp corners */
     overflow: hidden;
     background-color: #FFFFFF;
     display: flex;
@@ -139,6 +164,7 @@
     padding: 1rem 0 6rem; /* extra bottom space for date */
     gap: 1rem;
   }
+  
   .shot {
     width: 90%;
     object-fit: cover;
@@ -149,8 +175,7 @@
   /* ─── Custom Resize Handles ─── */
   .resize-handle {
     position: absolute;
-    width: 10px;
-    height: 10px;
+    width: 10px; height: 10px;
     background: rgba(0, 0, 0, 0.6);
     border-radius: 50%;
     display: none;
@@ -168,13 +193,10 @@
   /* ─── Delete Button ─── */
   .sticker-delete-btn {
     position: absolute;
-    top: -12px;
-    right: -12px;
-    background: #FFF;
-    border: 1px solid #333;
+    top: -12px; right: -12px;
+    background: #FFF; border: 1px solid #333;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 24px; height: 24px;
     display: none;
     align-items: center;
     justify-content: center;
@@ -212,3 +234,4 @@
   .collect-btn:hover {
     background: #B0ABF5;
   }
+  

@@ -139,4 +139,47 @@
     background-color: #d3d3f7;
   }
   
+  /* Upload section container */
+.uploadSection {
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* “Select N Photos” button */
+.uploadBtn {
+  padding: 0.75rem 1.5rem;
+  background: #D6D2FF;
+  color: #333;
+  border: none;
+  border-radius: 0.5rem;
+  font-family: Georgia, serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.uploadBtn:hover {
+  background: #C0BBFF;
+}
+
+/* Preview row of uploaded thumbnails */
+.previewUploads {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Individual preview thumbnail */
+.uploadPreview {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  background: #f4f4f4;
+  border: 2px solid #E2D8B8;
+  border-radius: 0.5rem;
+}
+
   

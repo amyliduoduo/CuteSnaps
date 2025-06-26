@@ -1,19 +1,19 @@
 // src/components/EditPage.jsx
-import React, { useState, useRef, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import html2canvas from 'html2canvas';
-import EmojiPicker from 'emoji-picker-react';
-import { Rnd } from 'react-rnd';
-import './EditPage.css';
+import React, { useState, useRef, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import html2canvas from 'html2canvas'
+import EmojiPicker from 'emoji-picker-react'
+import { Rnd } from 'react-rnd'
+import './EditPage.css'
 
 export default function EditPage() {
-  const { photos = [], layout = photos.length } = useLocation().state || {};
-
-  const [showDate, setShowDate]     = useState(true);
-  const [frameColor, setFrameColor] = useState('#FFFFFF');
-  const [sticks, setSticks]         = useState([]);
-  const [selectedId, setSelectedId] = useState(null);
-  const containerRef = useRef(null);
+  const { photos = [], layout = photos.length } = useLocation().state || {}
+  const [showDate, setShowDate] = useState(true)
+  const [frameColor, setFrameColor] = useState('#FFFFFF')
+  const [sticks, setSticks] = useState([])
+  const [selectedId, setSelectedId] = useState(null)
+  const containerRef = useRef(null)
+  const colorInputRef = useRef(null)
 
   const frameColors = [
     { hex: '#FFFFFF', label: 'Pure White' },
@@ -26,100 +26,144 @@ export default function EditPage() {
     { hex: '#B5838D', label: 'Lavender Mist' },
     { hex: '#C0C0C0', label: 'Metallic Silver' },
     { hex: '#A8DADC', label: 'Mint Cream' },
-    { hex: '#D3D3D3', label: 'Light Gray' }
-  ];
+    { hex: '#D3D3D3', label: 'Light Gray' },
+    { hex: null,      label: 'Custom' }
+  ]
 
   useEffect(() => {
-    const root = document.querySelector('.emoji-picker-react');
-    if (!root) return;
+    const root = document.querySelector('.emoji-picker-react')
+    if (!root) return
     const obs = new MutationObserver(() => {
       root.querySelectorAll('button').forEach(btn => {
         if (!btn.draggable && btn.textContent.trim()) {
-          btn.draggable = true;
+          btn.draggable = true
           btn.addEventListener('dragstart', e => {
-            const img = btn.querySelector('img');
-            const payload = img ? img.src : btn.textContent.trim();
-            e.dataTransfer.setData('text/plain', payload);
-          });
+            const img = btn.querySelector('img')
+            const payload = img ? img.src : btn.textContent.trim()
+            e.dataTransfer.setData('text/plain', payload)
+          })
         }
-      });
-    });
-    obs.observe(root, { subtree: true, childList: true });
-    return () => obs.disconnect();
-  }, []);
+      })
+    })
+    obs.observe(root, { subtree: true, childList: true })
+    return () => obs.disconnect()
+  }, [])
 
   const handleDrop = e => {
-    e.preventDefault();
-    const data = e.dataTransfer.getData('text/plain');
-    if (!data) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const isUrl = data.startsWith('http');
+    e.preventDefault()
+    const data = e.dataTransfer.getData('text/plain')
+    if (!data) return
+
+    const rect = containerRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const isUrl = data.startsWith('http')
+
     setSticks(prev => [
       ...prev,
-      { id: Date.now(), x, y, width: 64, height: 64,
+      {
+        id: Date.now(),
+        x, y,
+        width: 64,
+        height: 64,
         ...(isUrl ? { src: data } : { char: data })
       }
-    ]);
-  };
+    ])
+  }
 
   const deleteSticker = id => {
-    setSticks(prev => prev.filter(st => st.id !== id));
-    if (selectedId === id) setSelectedId(null);
-  };
+    setSticks(prev => prev.filter(s => s.id !== id))
+    if (selectedId === id) setSelectedId(null)
+  }
 
   const handleDownload = () => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) return
     html2canvas(containerRef.current, { useCORS: true }).then(canvas => {
-      const link = document.createElement('a');
-      link.download = 'photostrip.png';
-      link.href = canvas.toDataURL();
-      link.click();
-    });
-  };
+      const link = document.createElement('a')
+      link.download = 'photostrip.png'
+      link.href = canvas.toDataURL()
+      link.click()
+    })
+  }
 
   return (
     <div className="edit-page">
       {/* LEFT PANEL */}
       <div className="edit-controls">
-        <img src="/assets/customizequote.svg" alt="Customize" className="edit-quote" />
+        <img
+          src="/assets/customizequote.svg"
+          alt="Customize your photostrip"
+          className="edit-quote"
+        />
+
+        {/* Date Stamp Toggle */}
         <div className="toggle-row">
-  <span>Display Date Stamp:</span>
-  <label className="switch">
-    <input
-      type="checkbox"
-      checked={showDate}
-      onChange={e => setShowDate(e.target.checked)}
-    />
-    <span className="slider"></span>
-  </label>
-</div>
+          <span>Display Date Stamp:</span>
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={showDate}
+              onChange={e => setShowDate(e.target.checked)}
+            />
+            <span className="slider" />
+          </label>
+        </div>
+
+        {/* Frame Color */}
         <div className="control-group">
           <span>Frame Color:</span>
           <div className="color-options">
             {frameColors.map(c => (
               <button
-                key={c.hex}
-                className={`color-btn ${frameColor === c.hex ? 'selected' : ''}`}
-                style={{ backgroundColor: c.hex }}
-                onClick={() => setFrameColor(c.hex)}
-              >{c.label}</button>
+                key={c.label}
+                className={
+                  'color-btn' +
+                  (frameColor === c.hex ? ' selected' : '') +
+                  (c.label === 'Metallic Silver' ? ' metallic' : '') +
+                  (c.label === 'Custom' ? ' custom-btn' : '')
+                }
+                style={{ '--btn-color': c.hex || '#E9E1CD' }}
+                onClick={() =>
+                  c.label === 'Custom'
+                    ? colorInputRef.current.click()
+                    : setFrameColor(c.hex)
+                }
+              >
+                {c.label}
+                {c.label === 'Custom' && (
+                  <input
+                    type="color"
+                    ref={colorInputRef}
+                    className="color-picker"
+                    value={frameColor}
+                    onChange={e => setFrameColor(e.target.value)}
+                  />
+                )}
+              </button>
             ))}
-            <button className="color-btn custom-btn" onClick={() => {
-              const hex = prompt('Enter hex code:', frameColor);
-              if (hex) setFrameColor(hex);
-            }}>Custom</button>
           </div>
         </div>
+
+        {/* Decorations */}
         <div className="control-group">
-          <span>Decorations:</span>
-          <EmojiPicker disableAutoFocus pickerStyle={{width:'100%',height:'200px'}} />
+          <span>Draggable Sticker:</span>
+          <EmojiPicker
+            disableAutoFocus
+            pickerStyle={{ width: '100%', height: '250px' }}
+          />
         </div>
       </div>
+
       {/* RIGHT PREVIEW */}
-      <div className="edit-preview" onClick={() => setSelectedId(null)}>
-        <img src="/assets/previewquote.svg" alt="Preview" className="preview-quote" />
+      <div
+        className="edit-preview"
+        onClick={() => setSelectedId(null)}
+      >
+        <img
+          src="/assets/previewquote.svg"
+          alt="Preview"
+          className="preview-quote"
+        />
         <div
           className="preview-frame"
           ref={containerRef}
@@ -127,36 +171,116 @@ export default function EditPage() {
           onDragOver={e => e.preventDefault()}
           onDrop={handleDrop}
         >
-          {photos.map((photo,i)=>(
-            <img key={i} src={photo} alt={`shot-${i}`} className={`shot shot-${layout}`} />
+          {photos.map((photo, i) => (
+            <img
+              key={i}
+              src={photo}
+              alt={`shot-${i}`}
+              className="shot"
+            />
           ))}
-          {sticks.map(st=>(
+
+          {sticks.map(st => (
             <Rnd
               key={st.id}
               className="sticker-wrapper"
               bounds="parent"
-              size={{width:st.width,height:st.height}}
-              position={{x:st.x,y:st.y}}
-              onDragStop={(_,d)=>setSticks(prev=>prev.map(s=>s.id===st.id?{...s,x:d.x,y:d.y}:s))}
-              onResizeStop={(_,__,ref,___,pos)=>setSticks(prev=>prev.map(s=>s.id===st.id?{...s,width:parseInt(ref.style.width),height:parseInt(ref.style.height),x:pos.x,y:pos.y}:s))}
-              enableResizing={{top:true,right:true,bottom:true,left:true,topRight:true,bottomRight:true,bottomLeft:true,topLeft:true}}
-              resizeHandleClasses={{
-                topLeft:'resize-handle top-left',topRight:'resize-handle top-right',
-                bottomLeft:'resize-handle bottom-left',bottomRight:'resize-handle bottom-right'
+              size={{ width: st.width, height: st.height }}
+              position={{ x: st.x, y: st.y }}
+              onDragStop={(_, d) =>
+                setSticks(prev =>
+                  prev.map(s =>
+                    s.id === st.id
+                      ? { ...s, x: d.x, y: d.y }
+                      : s
+                  )
+                )
+              }
+              onResizeStop={(_, __, ref, ___, pos) =>
+                setSticks(prev =>
+                  prev.map(s =>
+                    s.id === st.id
+                      ? {
+                          ...s,
+                          width: parseInt(ref.style.width),
+                          height: parseInt(ref.style.height),
+                          x: pos.x,
+                          y: pos.y
+                        }
+                      : s
+                  )
+                )
+              }
+              enableResizing={{
+                top: true,
+                right: true,
+                bottom: true,
+                left: true,
+                topRight: true,
+                bottomRight: true,
+                bottomLeft: true,
+                topLeft: true
               }}
-              onClick={e=>{e.stopPropagation();setSelectedId(st.id)}}
+              resizeHandleClasses={{
+                topLeft: 'resize-handle top-left',
+                topRight: 'resize-handle top-right',
+                bottomLeft: 'resize-handle bottom-left',
+                bottomRight: 'resize-handle bottom-right'
+              }}
+              onClick={e => {
+                e.stopPropagation()
+                setSelectedId(st.id)
+              }}
             >
-              {st.src ? <img src={st.src} style={{width:'100%',height:'100%',pointerEvents:'none'}}/> : <span style={{fontSize:`${st.height*0.8}px`,pointerEvents:'none'}}>{st.char}</span>}
+              {st.src ? (
+                <img
+                  src={st.src}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    pointerEvents: 'none'
+                  }}
+                />
+              ) : (
+                <span
+                  style={{
+                    fontSize: `${st.height * 0.8}px`,
+                    pointerEvents: 'none'
+                  }}
+                >
+                  {st.char}
+                </span>
+              )}
               <button
                 className="sticker-delete-btn"
-                onClick={e=>{e.stopPropagation();deleteSticker(st.id)}}
-              >🗑️</button>
+                onClick={e => {
+                  e.stopPropagation()
+                  deleteSticker(st.id)
+                }}
+              >
+                🗑️
+              </button>
             </Rnd>
           ))}
-          {showDate && <div className="date-stamp">{new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'})}</div>}
+
+          {showDate && (
+            <div className="date-stamp">
+              {new Date().toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </div>
+          )}
         </div>
-        <button className="collect-btn" onClick={handleDownload}>Collect Photo</button>
+
+        <button
+          className="collect-btn"
+          onClick={handleDownload}
+        >
+          Collect Photo
+        </button>
       </div>
     </div>
-  );
+  )
 }
