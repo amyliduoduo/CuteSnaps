@@ -1,0 +1,169 @@
+body, .download-bg {
+  min-height: 100vh;
+  background: #FCF7E9;
+  margin: 0;
+  padding: 0;
+}
+
+.download-container {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.download-title {
+  font-family: 'Roboto', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  color: #A75AC7;
+  text-align: center;
+  margin-top: 2.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.download-subtitle {
+  font-family: 'Seaweed Script', cursive;
+  font-style: italic;
+  font-size: 16px;
+  color: #A75AC7;
+  text-align: center;
+  margin-bottom: 2.2rem;
+}
+
+.outer-rect {
+  background: #E3E3F7;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px 0 rgba(167, 90, 199, 0.07);
+  padding: 3.2rem 3.2rem 3.7rem 3.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.inner-rect {
+  background: #E9E1CD;
+  border-radius: 14px;
+  width: 340px;
+  height: 440px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-shadow: 0 2px 8px 0 rgba(185, 169, 225, 0.07) inset, 0 0 0 1px #e3e3f7, inset 0 8px 32px 0 rgba(167,90,199,0.08);
+}
+
+.downloaded-svg {
+  display: block;
+  margin: 2.5rem auto 0.2rem auto;
+  max-width: 320px;
+  width: 100%;
+}
+.tada-svg {
+  display: block;
+  margin: 0 auto 2.2rem auto;
+  max-width: 260px;
+  width: 100%;
+}
+
+.photostrip-img {
+  position: absolute;
+  left: 50%;
+  bottom: 70px;
+  /* Use natural aspect ratio and size, max out at inner-rect size */
+  width: auto;
+  height: auto;
+  max-width: 90%;
+  max-height: 70%;
+  border-radius: 0;
+  box-shadow: 0 4px 16px 0 rgba(177, 138, 214, 0.13);
+  background: none;
+  z-index: 2;
+  animation: photostrip-drop 1.8s ease-out 0.1s forwards;
+  transform: translateX(-50%);
+}
+
+@keyframes photostrip-drop {
+  0% {
+    opacity: 0;
+    bottom: 100%;
+    /* start off above the inner-rect */
+  }
+  70% {
+    opacity: 1;
+    bottom: 80px;
+  }
+  85% {
+    bottom: 65px;
+  }
+  100% {
+    opacity: 1;
+    bottom: 70px;
+  }
+}
+
+.purple-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 70px;
+  height: 2px;
+  background: #B9A9E1;
+  border-radius: 2px;
+}
+
+.send-letter-btn {
+  margin-top: 2.2rem;
+  background: #D6F5D6;
+  color: #1a3d1a;
+  font-family: 'Roboto', Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  border: none;
+  border-radius: 14px;
+  padding: 0.7em 2.2em;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(60, 120, 60, 0.07);
+  transition: background 0.18s, transform 0.12s;
+  display: block;
+}
+.send-letter-btn:hover, .send-letter-btn:focus {
+  background: #b8e6b8;
+  transform: translateY(-2px) scale(1.03);
+}
+
+@media (max-width: 600px) {
+  .outer-rect {
+    padding: 0.7rem 0.2rem 1.2rem 0.2rem;
+  }
+  .inner-rect {
+    width: 98vw;
+    max-width: 98vw;
+    height: 260px;
+  }
+  .photostrip-img {
+    max-width: 90%;
+    max-height: 70%;
+  }
+  .purple-line {
+    left: 0;
+    right: 0;
+    bottom: 30px;
+  }
+  .download-title {
+    font-size: 18px;
+  }
+  .download-subtitle {
+    font-size: 13px;
+  }
+  .send-letter-btn {
+    font-size: 15px;
+    padding: 0.6em 1.1em;
+  }
+}

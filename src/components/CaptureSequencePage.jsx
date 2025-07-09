@@ -13,8 +13,10 @@ export default function CaptureSequencePage() {
   const [stepIndex, setStepIndex] = useState(0)
   const [countdown, setCountdown] = useState(null)
   const [photos, setPhotos] = useState([])
+  const [ready, setReady] = useState(true)
 
   const LINGER_MS = 2000
+  const READY_MS = 2000 // Show 'Get ready...' for 2 seconds
 
   // 1) Start camera
   useEffect(() => {
@@ -43,11 +45,22 @@ export default function CaptureSequencePage() {
     if (stepIndex >= layout) {
       navigate('/edit', { state: { photos, layout } })
     } else {
-      setCountdown(timer)
+      setReady(true)
+      setCountdown(null)
     }
-  }, [stepIndex, layout, timer, navigate, photos])
+  }, [stepIndex, layout, navigate, photos])
 
-  // 3) Countdown then snapshot
+  // 3) Show 'Get ready...' then start countdown
+  useEffect(() => {
+    if (!ready || stepIndex >= layout) return
+    const id = setTimeout(() => {
+      setReady(false)
+      setCountdown(timer)
+    }, READY_MS)
+    return () => clearTimeout(id)
+  }, [ready, stepIndex, layout, timer])
+
+  // 4) Countdown then snapshot
   useEffect(() => {
     if (countdown == null) return
     const id = setInterval(() => {
@@ -64,7 +77,7 @@ export default function CaptureSequencePage() {
     return () => clearInterval(id)
   }, [countdown])
 
-  // 4) Capture frame + filter
+  // 5) Capture frame + filter
   function takeSnapshot() {
     const video = videoRef.current
     const canvas = canvasRef.current
@@ -92,9 +105,11 @@ export default function CaptureSequencePage() {
         {stepIndex < layout && (
           <div className="sequence-overlay">
             <span className="sequence-title">
-              {countdown != null
-                ? countdown
-                : `Get ready for photo ${stepIndex + 1} of ${layout}`}
+              {ready
+                ? `Get ready for photo ${stepIndex + 1} of ${layout}`
+                : countdown != null
+                  ? countdown
+                  : null}
             </span>
           </div>
         )}

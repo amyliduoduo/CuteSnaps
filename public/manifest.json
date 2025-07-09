@@ -1,20 +1,16 @@
 {
   "short_name": "CuteSnaps",
-  "name": "CuteSnaps",
+  "name": "CuteSnaps Photo Booth",
   "icons": [
     {
       "src": "cutesnaps-favicon.png",
-      "sizes": "192x192",
+      "sizes": "32x32",
       "type": "image/png"
     },
-    {
-      "src": "cutesnaps-favicon.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
   ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#FCF7E9",
-  "background_color": "#FCF7E9"
+  "background_color": "#ffffff"
 }
+

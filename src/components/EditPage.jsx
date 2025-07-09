@@ -1,6 +1,6 @@
 // src/components/EditPage.jsx
 import React, { useState, useRef, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import html2canvas from 'html2canvas'
 import EmojiPicker from 'emoji-picker-react'
 import { Rnd } from 'react-rnd'
@@ -14,6 +14,7 @@ export default function EditPage() {
   const [selectedId, setSelectedId] = useState(null)
   const containerRef = useRef(null)
   const colorInputRef = useRef(null)
+  const navigate = useNavigate();
 
   const frameColors = [
     { hex: '#FFFFFF', label: 'Pure White' },
@@ -27,12 +28,13 @@ export default function EditPage() {
     { hex: '#C0C0C0', label: 'Metallic Silver' },
     { hex: '#A8DADC', label: 'Mint Cream' },
     { hex: '#D3D3D3', label: 'Light Gray' },
-    { hex: null,      label: 'Custom' }
+    { hex: null, label: 'Custom' }
   ]
 
   useEffect(() => {
     const root = document.querySelector('.emoji-picker-react')
     if (!root) return
+
     const obs = new MutationObserver(() => {
       root.querySelectorAll('button').forEach(btn => {
         if (!btn.draggable && btn.textContent.trim()) {
@@ -41,10 +43,21 @@ export default function EditPage() {
             const img = btn.querySelector('img')
             const payload = img ? img.src : btn.textContent.trim()
             e.dataTransfer.setData('text/plain', payload)
+            e.dataTransfer.setData('text', payload) // Add this line for Safari/Mac compatibility
+            // ✅ Mac/Safari fix — setDragImage
+            const dragGhost = document.createElement('div')
+            dragGhost.textContent = payload
+            dragGhost.style.position = 'absolute'
+            dragGhost.style.top = '-9999px'
+            dragGhost.style.fontSize = '32px'
+            document.body.appendChild(dragGhost)
+            e.dataTransfer.setDragImage(dragGhost, 0, 0)
+            setTimeout(() => document.body.removeChild(dragGhost), 0)
           })
         }
       })
     })
+
     obs.observe(root, { subtree: true, childList: true })
     return () => obs.disconnect()
   }, [])
@@ -79,10 +92,13 @@ export default function EditPage() {
   const handleDownload = () => {
     if (!containerRef.current) return
     html2canvas(containerRef.current, { useCORS: true }).then(canvas => {
+      const dataUrl = canvas.toDataURL();
       const link = document.createElement('a')
       link.download = 'photostrip.png'
-      link.href = canvas.toDataURL()
+      link.href = dataUrl
       link.click()
+      // Navigate to Download Page and pass the photostrip dataUrl
+      navigate('/download', { state: { photostripUrl: dataUrl } })
     })
   }
 
