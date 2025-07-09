@@ -24,12 +24,26 @@
   .option {
     position: relative;
     cursor: pointer;
-    transition: border-color 0.2s;
+    transition: box-shadow 0.2s, border 0.2s;
+    border: none;
   }
   
-  .selected {
-    border: 4px solid #d81b60;
+  .option.selected {
+    /* Remove highlight from outer option */
+    box-shadow: none;
+    border: none;
+    outline: none;
   }
+
+.box2.selected,
+.box3.selected,
+.box4.selected,
+.box6.selected {
+  box-shadow: 0 0 0 4px #e3e3f7, 0 4px 18px 0 rgba(167, 90, 199, 0.10);
+  border: 2.5px solid #b8a98e;
+  outline: none;
+  z-index: 2;
+}
   
   /* 2-pose */
   .box2 {
@@ -109,19 +123,22 @@
   .control {
     padding: 0.75rem 1.5rem;
     border: 2px solid #ccc;
-    background: white;
+    background: #fff;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background 0.2s, box-shadow 0.2s, border 0.2s;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    border-radius: 0.5rem;
   }
   
   .control.selected {
-    border-color: #d81b60;
-    background-color: #e7e6e4;
+    background-color: #e3e3f7;
+    box-shadow: 0 2px 8px 0 rgba(167, 90, 199, 0.10);
+    border: 2px solid #b8a98e;
+    outline: none;
   }
   
   /* Next button */

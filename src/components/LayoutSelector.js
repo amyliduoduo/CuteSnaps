@@ -62,10 +62,10 @@ export default function LayoutSelector() {
         {layouts.map(n => (
           <div
             key={n}
-            className={`${styles.option} ${selected === n ? styles.selected : ''}`}
+            className={styles.option}
             onClick={() => setSelected(n)}
           >
-            <div className={styles[`box${n}`]}>
+            <div className={`${styles[`box${n}`]} ${selected === n ? styles.selected : ''}`}>
               {Array.from({ length: n }).map((_, i) => (
                 <div key={i} className={styles.photo} />
               ))}
