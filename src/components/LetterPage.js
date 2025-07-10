@@ -1,17 +1,38 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import './LetterPage.css';
+
+function getQueryParam(name) {
+  const url = new URL(window.location.href);
+  return url.searchParams.get(name);
+}
 
 const LetterPage = () => {
   const [toast, setToast] = useState(false);
   const [topLayer, setTopLayer] = useState('photostrip');
+  const [message, setMessage] = useState('');
+  const [photostripUrl, setPhotostripUrl] = useState('');
   const letterRef = useRef();
   const photostripRef = useRef();
 
-  const message = localStorage.getItem('letterMessage') || '';
-  const photostripUrl = localStorage.getItem('photostripUrl') || '';
+  // On mount, check for query params, else fallback to localStorage
+  useEffect(() => {
+    const imgParam = getQueryParam('img');
+    const msgParam = getQueryParam('msg');
+    if (imgParam && msgParam) {
+      setPhotostripUrl(decodeURIComponent(imgParam));
+      setMessage(decodeURIComponent(msgParam));
+    } else {
+      setPhotostripUrl(localStorage.getItem('photostripUrl') || '');
+      setMessage(localStorage.getItem('letterMessage') || '');
+    }
+  }, []);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(window.location.href);
+    // Use current state for message and photostripUrl
+    const url = new URL(window.location.href);
+    url.searchParams.set('img', encodeURIComponent(photostripUrl));
+    url.searchParams.set('msg', encodeURIComponent(message));
+    navigator.clipboard.writeText(url.toString());
     setToast(true);
     setTimeout(() => setToast(false), 1800);
   };
