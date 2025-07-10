@@ -1,3 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Ramaraja&display=swap');
+
+.layoutLabel {
+  font-family: 'Ramaraja', serif;
+  color: #918A87;
+  font-size: 1.25rem;
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  margin: 0;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 4px #fff, 0 0px 2px #fff;
+  pointer-events: none;
+  user-select: none;
+}
+
 /* src/components/LayoutSelector.module.css */
 
 .container {
@@ -56,7 +73,7 @@
   .box2 .photo {
     width: 170px;
     height: 105px;
-    background-color: white;
+    object-fit: cover;
     margin-bottom: 15px;
     border-radius: 4px;
   }
@@ -72,7 +89,7 @@
   .box3 .photo {
     width: 150px;
     height: 85px;
-    background-color: white;
+    object-fit: cover;
     margin-bottom: 18px;
     border-radius: 4px;
   }
@@ -88,7 +105,7 @@
   .box4 .photo {
     width: 140px;
     height: 75px;
-    background-color: white;
+    object-fit: cover;
     margin-bottom: 18px;
     border-radius: 4px;
   }
@@ -107,8 +124,10 @@
   
   /* Individual photo cells in grid get their own style */
   .box6 .photo {
-    background-color: white;
+    object-fit: cover;
     border-radius: 4px;
+    width: 100%;
+    height: 100%;
   }
   
   /* Upload / Take Photo controls */

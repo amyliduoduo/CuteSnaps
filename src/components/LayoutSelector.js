@@ -56,22 +56,73 @@ export default function LayoutSelector() {
         alt="Choose your layout"
         className={styles.titleImg}
       />
+      {/* Pick layout quote SVG */}
+      <img
+        src="/assets/picklayout.svg"
+        alt="Pick a layout to start your photo session"
+        style={{ margin: '0 auto 0.7rem', display: 'block', maxWidth: '340px', width: '100%' }}
+      />
 
       {/* Layout Options */}
       <div className={styles.grid}>
-        {layouts.map(n => (
-          <div
-            key={n}
-            className={styles.option}
-            onClick={() => setSelected(n)}
-          >
-            <div className={`${styles[`box${n}`]} ${selected === n ? styles.selected : ''}`}>
-              {Array.from({ length: n }).map((_, i) => (
-                <div key={i} className={styles.photo} />
-              ))}
-            </div>
+        {/* Layout A (2 Poses) */}
+        <div
+          className={styles.option}
+          onClick={() => setSelected(2)}
+        >
+          <div className={`${styles.box2} ${selected === 2 ? styles.selected : ''}`}
+            style={{ position: 'relative' }}>
+            <img src="/assets/pose1layout1.png" alt="Pose 1" className={styles.photo} />
+            <img src="/assets/pose2layout1.png" alt="Pose 2" className={styles.photo} />
+            <div className={styles.layoutLabel}>2 Pose</div>
           </div>
-        ))}
+        </div>
+
+        {/* Layout B (3 Poses) */}
+        <div
+          className={styles.option}
+          onClick={() => setSelected(3)}
+        >
+          <div className={`${styles.box3} ${selected === 3 ? styles.selected : ''}`}
+            style={{ position: 'relative' }}>
+            <img src="/assets/pose1layout2.png" alt="Pose 1" className={styles.photo} />
+            <img src="/assets/pose2layout2.png" alt="Pose 2" className={styles.photo} />
+            <img src="/assets/pose3layout2.png" alt="Pose 3" className={styles.photo} />
+            <div className={styles.layoutLabel}>3 Pose</div>
+          </div>
+        </div>
+
+        {/* Layout C (4 Poses) */}
+        <div
+          className={styles.option}
+          onClick={() => setSelected(4)}
+        >
+          <div className={`${styles.box4} ${selected === 4 ? styles.selected : ''}`}
+            style={{ position: 'relative' }}>
+            <img src="/assets/pose1layout3.png" alt="Pose 1" className={styles.photo} />
+            <img src="/assets/pose2layout3.png" alt="Pose 2" className={styles.photo} />
+            <img src="/assets/pose3layout3.png" alt="Pose 3" className={styles.photo} />
+            <img src="/assets/pose4layout3.png" alt="Pose 4" className={styles.photo} />
+            <div className={styles.layoutLabel}>4 Pose</div>
+          </div>
+        </div>
+
+        {/* Layout D (6 Poses) */}
+        <div
+          className={styles.option}
+          onClick={() => setSelected(6)}
+        >
+          <div className={`${styles.box6} ${selected === 6 ? styles.selected : ''}`}
+            style={{ position: 'relative' }}>
+            <img src="/assets/pose1layout4.png" alt="Pose 1" className={styles.photo} />
+            <img src="/assets/pose2layout4.png" alt="Pose 2" className={styles.photo} />
+            <img src="/assets/pose3layout4.png" alt="Pose 3" className={styles.photo} />
+            <img src="/assets/pose4layout4.png" alt="Pose 4" className={styles.photo} />
+            <img src="/assets/pose5layout4.png" alt="Pose 5" className={styles.photo} />
+            <img src="/assets/pose6layout4.png" alt="Pose 6" className={styles.photo} />
+            <div className={styles.layoutLabel}>6 Pose</div>
+          </div>
+        </div>
       </div>
 
       {/* Upload vs Camera Controls */}

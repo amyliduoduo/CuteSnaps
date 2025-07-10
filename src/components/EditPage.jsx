@@ -12,6 +12,7 @@ export default function EditPage() {
   const [frameColor, setFrameColor] = useState('#FFFFFF')
   const [sticks, setSticks] = useState([])
   const [selectedId, setSelectedId] = useState(null)
+  const [isDragOver, setIsDragOver] = useState(false)
   const containerRef = useRef(null)
   const colorInputRef = useRef(null)
   const navigate = useNavigate();
@@ -42,17 +43,29 @@ export default function EditPage() {
           btn.addEventListener('dragstart', e => {
             const img = btn.querySelector('img')
             const payload = img ? img.src : btn.textContent.trim()
+            
+            // Set multiple data formats for better Safari/Mac compatibility
             e.dataTransfer.setData('text/plain', payload)
-            e.dataTransfer.setData('text', payload) // Add this line for Safari/Mac compatibility
+            e.dataTransfer.setData('text', payload)
+            e.dataTransfer.setData('application/x-moz-file', payload)
+            
+            // Set effectAllowed for better cross-browser compatibility
+            e.dataTransfer.effectAllowed = 'copy'
+            
             // ✅ Mac/Safari fix — setDragImage
             const dragGhost = document.createElement('div')
             dragGhost.textContent = payload
             dragGhost.style.position = 'absolute'
             dragGhost.style.top = '-9999px'
             dragGhost.style.fontSize = '32px'
+            dragGhost.style.pointerEvents = 'none'
             document.body.appendChild(dragGhost)
             e.dataTransfer.setDragImage(dragGhost, 0, 0)
-            setTimeout(() => document.body.removeChild(dragGhost), 0)
+            setTimeout(() => {
+              if (document.body.contains(dragGhost)) {
+                document.body.removeChild(dragGhost)
+              }
+            }, 0)
           })
         }
       })
@@ -64,7 +77,17 @@ export default function EditPage() {
 
   const handleDrop = e => {
     e.preventDefault()
-    const data = e.dataTransfer.getData('text/plain')
+    e.stopPropagation()
+    
+    // Try multiple data formats for better Safari/Mac compatibility
+    let data = e.dataTransfer.getData('text/plain')
+    if (!data) {
+      data = e.dataTransfer.getData('text')
+    }
+    if (!data) {
+      data = e.dataTransfer.getData('application/x-moz-file')
+    }
+    
     if (!data) return
 
     const rect = containerRef.current.getBoundingClientRect()
@@ -166,6 +189,24 @@ export default function EditPage() {
           <EmojiPicker
             disableAutoFocus
             pickerStyle={{ width: '100%', height: '250px' }}
+            onEmojiClick={(emojiObject) => {
+              // Fallback for Safari/Mac: click to add emoji
+              const rect = containerRef.current?.getBoundingClientRect()
+              if (rect) {
+                const x = rect.width / 2 - 32 // Center horizontally
+                const y = rect.height / 2 - 32 // Center vertically
+                setSticks(prev => [
+                  ...prev,
+                  {
+                    id: Date.now(),
+                    x, y,
+                    width: 64,
+                    height: 64,
+                    char: emojiObject.emoji
+                  }
+                ])
+              }
+            }}
           />
         </div>
       </div>
@@ -181,11 +222,32 @@ export default function EditPage() {
           className="preview-quote"
         />
         <div
-          className="preview-frame"
+          className={`preview-frame ${isDragOver ? 'drag-over' : ''}`}
           ref={containerRef}
-          style={{ backgroundColor: frameColor }}
-          onDragOver={e => e.preventDefault()}
-          onDrop={handleDrop}
+          style={{ backgroundColor: isDragOver ? '#F0F8FF' : frameColor }}
+          onDragOver={e => {
+            e.preventDefault()
+            e.stopPropagation()
+            e.dataTransfer.dropEffect = 'copy'
+            setIsDragOver(true)
+          }}
+          onDragEnter={e => {
+            e.preventDefault()
+            e.stopPropagation()
+            setIsDragOver(true)
+          }}
+          onDragLeave={e => {
+            e.preventDefault()
+            e.stopPropagation()
+            // Only set drag over to false if we're leaving the container
+            if (!e.currentTarget.contains(e.relatedTarget)) {
+              setIsDragOver(false)
+            }
+          }}
+          onDrop={e => {
+            setIsDragOver(false)
+            handleDrop(e)
+          }}
         >
           {photos.map((photo, i) => (
             <img

@@ -68,7 +68,8 @@ export default function CaptureSequencePage() {
         if (c <= 1) {
           clearInterval(id)
           takeSnapshot()
-          setTimeout(() => setStepIndex(i => i + 1), LINGER_MS)
+          // Increment stepIndex immediately after taking snapshot
+          setStepIndex(i => i + 1)
           return null
         }
         return c - 1

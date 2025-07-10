@@ -163,6 +163,18 @@
     align-items: center;
     padding: 1rem 0 6rem; /* extra bottom space for date */
     gap: 1rem;
+    /* Safari/Mac drag and drop improvements */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+  }
+  
+  /* Safari/Mac drag over state */
+  .preview-frame.drag-over {
+    background-color: #F0F8FF;
+    border: 2px dashed #CAC8FF;
   }
   
   .shot {
