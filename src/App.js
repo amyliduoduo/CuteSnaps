@@ -12,8 +12,6 @@ import DownloadPage from './components/DownloadPage';
 import TextboxPage from './components/TextboxPage';
 import LetterPage from './components/LetterPage';
 import { useLocation } from 'react-router-dom';
-import { Analytics } from "@vercel/analytics/react";
-inject();
 
 function App() {
   // this will receive the timer+filter settings from your capture page
@@ -34,6 +32,7 @@ function App() {
         <Route path="/textbox" element={<TextboxPage />} />
         <Route path="/final-letter" element={<LetterPage />} />
       </Routes>
+      <Analytics />
     </Router>
   );
 }
