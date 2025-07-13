@@ -6,6 +6,15 @@ import EmojiPicker from 'emoji-picker-react'
 import { Rnd } from 'react-rnd'
 import './EditPage.css'
 
+function getCenterCoords(containerRef, width, height) {
+  const rect = containerRef.current?.getBoundingClientRect();
+  if (!rect) return { x: 0, y: 0 };
+  return {
+    x: rect.width / 2 - width / 2,
+    y: rect.height / 2 - height / 2
+  };
+}
+
 export default function EditPage() {
   const { photos = [], layout = photos.length } = useLocation().state || {}
   const [showDate, setShowDate] = useState(true)
@@ -13,6 +22,8 @@ export default function EditPage() {
   const [sticks, setSticks] = useState([])
   const [selectedId, setSelectedId] = useState(null)
   const [isDragOver, setIsDragOver] = useState(false)
+  const [rotatingId, setRotatingId] = useState(null)
+  const [rotationStart, setRotationStart] = useState(null)
   const containerRef = useRef(null)
   const colorInputRef = useRef(null)
   const navigate = useNavigate();
@@ -125,6 +136,74 @@ export default function EditPage() {
     })
   }
 
+  // Add sticker (drag or click) with rotation property
+  const addSticker = (sticker) => {
+    setSticks(prev => [
+      ...prev,
+      {
+        ...sticker,
+        rotation: 0 // default rotation
+      }
+    ])
+  }
+
+  // Rotation logic
+  const startRotate = (e, id) => {
+    e.stopPropagation();
+    const sticker = sticks.find(s => s.id === id);
+    if (!sticker) return;
+    // Get the center of the sticker in page coordinates
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const centerX = containerRect.left + sticker.x + sticker.width / 2;
+    const centerY = containerRect.top + sticker.y + sticker.height / 2;
+    const startAngle = Math.atan2(e.pageY - centerY, e.pageX - centerX) * 180 / Math.PI;
+    setRotatingId(id);
+    setRotationStart({
+      centerX,
+      centerY,
+      startAngle,
+      initialRotation: sticker.rotation || 0
+    });
+    document.body.style.cursor = 'grab';
+  };
+
+  useEffect(() => {
+    if (rotatingId == null || !rotationStart) return;
+    const handleMove = (e) => {
+      setSticks(prev => prev.map(s => {
+        if (s.id !== rotatingId) return s;
+        const { centerX, centerY, startAngle, initialRotation } = rotationStart;
+        const currentAngle = Math.atan2(e.pageY - centerY, e.pageX - centerX) * 180 / Math.PI;
+        let newRotation = initialRotation + (currentAngle - startAngle);
+        return { ...s, rotation: newRotation };
+      }));
+    };
+    const handleUp = () => {
+      setRotatingId(null);
+      setRotationStart(null);
+      document.body.style.cursor = '';
+    };
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+    };
+  }, [rotatingId, rotationStart]);
+
+  // Add keyboard delete support for selected sticker
+  useEffect(() => {
+    if (selectedId == null) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Backspace' || e.key === 'Delete') {
+        setSticks(prev => prev.filter(s => s.id !== selectedId));
+        setSelectedId(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedId]);
+
   return (
     <div className="edit-page">
       {/* LEFT PANEL */}
@@ -190,24 +269,19 @@ export default function EditPage() {
             disableAutoFocus
             pickerStyle={{ width: '100%', height: '250px' }}
             onEmojiClick={(emojiObject) => {
-              // Fallback for Safari/Mac: click to add emoji
-              const rect = containerRef.current?.getBoundingClientRect()
-              if (rect) {
-                const x = rect.width / 2 - 32 // Center horizontally
-                const y = rect.height / 2 - 32 // Center vertically
-                setSticks(prev => [
-                  ...prev,
-                  {
-                    id: Date.now(),
-                    x, y,
-                    width: 64,
-                    height: 64,
-                    char: emojiObject.emoji
-                  }
-                ])
-              }
+              const { x, y } = getCenterCoords(containerRef, 64, 64)
+              addSticker({
+                id: Date.now(),
+                x, y,
+                width: 64,
+                height: 64,
+                char: emojiObject.emoji
+              })
             }}
           />
+          <div style={{ fontSize: '0.95rem', color: '#918A87', marginTop: 6, fontStyle: 'italic' }}>
+            Tip: On Mac, click a sticker to add, then drag/resize/rotate on the photostrip.
+          </div>
         </div>
       </div>
 
@@ -258,88 +332,146 @@ export default function EditPage() {
             />
           ))}
 
-          {sticks.map(st => (
-            <Rnd
-              key={st.id}
-              className="sticker-wrapper"
-              bounds="parent"
-              size={{ width: st.width, height: st.height }}
-              position={{ x: st.x, y: st.y }}
-              onDragStop={(_, d) =>
-                setSticks(prev =>
-                  prev.map(s =>
-                    s.id === st.id
-                      ? { ...s, x: d.x, y: d.y }
-                      : s
+          {sticks.map(st => {
+            // Calculate the center and the top-center (handle) position relative to the sticker
+            const handleRadius = 32; // px from center to handle (distance from center to top)
+            const handleSize = 36; // px
+            const angleRad = ((st.rotation || 0) - 90) * Math.PI / 180; // -90 so 0deg is top
+            const handleCenterX = st.width / 2 + handleRadius * Math.cos(angleRad) - handleSize / 2;
+            const handleCenterY = st.height / 2 + handleRadius * Math.sin(angleRad) - handleSize / 2;
+            return (
+              <Rnd
+                key={st.id}
+                className={`sticker-wrapper${selectedId === st.id ? ' selected' : ''}`}
+                bounds="parent"
+                size={{ width: st.width, height: st.height }}
+                position={{ x: st.x, y: st.y }}
+                onDragStop={(_, d) =>
+                  setSticks(prev =>
+                    prev.map(s =>
+                      s.id === st.id
+                        ? { ...s, x: d.x, y: d.y }
+                        : s
+                    )
                   )
-                )
-              }
-              onResizeStop={(_, __, ref, ___, pos) =>
-                setSticks(prev =>
-                  prev.map(s =>
-                    s.id === st.id
-                      ? {
-                          ...s,
-                          width: parseInt(ref.style.width),
-                          height: parseInt(ref.style.height),
-                          x: pos.x,
-                          y: pos.y
-                        }
-                      : s
+                }
+                onResizeStop={(_, __, ref, ___, pos) =>
+                  setSticks(prev =>
+                    prev.map(s =>
+                      s.id === st.id
+                        ? {
+                            ...s,
+                            width: parseInt(ref.style.width),
+                            height: parseInt(ref.style.height),
+                            x: pos.x,
+                            y: pos.y
+                          }
+                        : s
+                    )
                   )
-                )
-              }
-              enableResizing={{
-                top: true,
-                right: true,
-                bottom: true,
-                left: true,
-                topRight: true,
-                bottomRight: true,
-                bottomLeft: true,
-                topLeft: true
-              }}
-              resizeHandleClasses={{
-                topLeft: 'resize-handle top-left',
-                topRight: 'resize-handle top-right',
-                bottomLeft: 'resize-handle bottom-left',
-                bottomRight: 'resize-handle bottom-right'
-              }}
-              onClick={e => {
-                e.stopPropagation()
-                setSelectedId(st.id)
-              }}
-            >
-              {st.src ? (
-                <img
-                  src={st.src}
+                }
+                enableResizing={{
+                  top: true,
+                  right: true,
+                  bottom: true,
+                  left: true,
+                  topRight: true,
+                  bottomRight: true,
+                  bottomLeft: true,
+                  topLeft: true
+                }}
+                resizeHandleClasses={{
+                  topLeft: 'resize-handle top-left',
+                  topRight: 'resize-handle top-right',
+                  bottomLeft: 'resize-handle bottom-left',
+                  bottomRight: 'resize-handle bottom-right'
+                }}
+                onClick={e => {
+                  e.stopPropagation()
+                  setSelectedId(st.id)
+                }}
+              >
+                {/* Canva-style always-visible, rotating handle */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: handleCenterX,
+                    top: handleCenterY,
+                    width: handleSize,
+                    height: handleSize,
+                    background: '#a084e8',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 2px 8px #b39ddb',
+                    border: '2.5px solid #fff',
+                    cursor: 'grab',
+                    zIndex: 20,
+                    pointerEvents: 'auto',
+                    userSelect: 'none',
+                  }}
+                  onMouseDown={e => {
+                    e.stopPropagation();
+                    const containerRect = containerRef.current.getBoundingClientRect();
+                    const centerX = containerRect.left + st.x + st.width / 2;
+                    const centerY = containerRect.top + st.y + st.height / 2;
+                    const startAngle = Math.atan2(e.pageY - centerY, e.pageX - centerX) * 180 / Math.PI;
+                    setRotatingId(st.id);
+                    setRotationStart({
+                      centerX,
+                      centerY,
+                      startAngle,
+                      initialRotation: st.rotation || 0
+                    });
+                    document.body.style.cursor = 'grab';
+                  }}
+                >
+                  <span role="img" aria-label="rotate" style={{ fontSize: 22, color: '#fff', userSelect: 'none', pointerEvents: 'none' }}>⟳</span>
+                </div>
+                <div
                   style={{
                     width: '100%',
                     height: '100%',
-                    pointerEvents: 'none'
-                  }}
-                />
-              ) : (
-                <span
-                  style={{
-                    fontSize: `${st.height * 0.8}px`,
+                    transform: `rotate(${st.rotation || 0}deg)`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     pointerEvents: 'none'
                   }}
                 >
-                  {st.char}
-                </span>
-              )}
-              <button
-                className="sticker-delete-btn"
-                onClick={e => {
-                  e.stopPropagation()
-                  deleteSticker(st.id)
-                }}
-              >
-                🗑️
-              </button>
-            </Rnd>
-          ))}
+                  {st.src ? (
+                    <img
+                      src={st.src}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        pointerEvents: 'none'
+                      }}
+                    />
+                  ) : (
+                    <span
+                      style={{
+                        fontSize: `${st.height * 0.8}px`,
+                        pointerEvents: 'none'
+                      }}
+                    >
+                      {st.char}
+                    </span>
+                  )}
+                </div>
+                <button
+                  className="sticker-delete-btn"
+                  onClick={e => {
+                    e.stopPropagation()
+                    deleteSticker(st.id)
+                  }}
+                >
+                  🗑️
+                </button>
+              </Rnd>
+            )
+          })}
 
           {showDate && (
             <div className="date-stamp">
