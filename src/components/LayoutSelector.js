@@ -55,12 +55,13 @@ export default function LayoutSelector() {
         src="/assets/chooselayout.svg"
         alt="Choose your layout"
         className={styles.titleImg}
+        style={{ display: 'block', margin: '0 auto 0.5rem' }}
       />
       {/* Pick layout quote SVG */}
       <img
         src="/assets/picklayout.svg"
         alt="Pick a layout to start your photo session"
-        style={{ margin: '0 auto 0.7rem', display: 'block', maxWidth: '340px', width: '100%' }}
+        style={{ margin: '0 auto 0.2rem', display: 'block', maxWidth: '340px', width: '100%' }}
       />
 
       {/* Layout Options */}

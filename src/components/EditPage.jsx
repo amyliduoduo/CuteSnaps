@@ -24,6 +24,7 @@ export default function EditPage() {
   const [isDragOver, setIsDragOver] = useState(false)
   const [rotatingId, setRotatingId] = useState(null)
   const [rotationStart, setRotationStart] = useState(null)
+  const [isExporting, setIsExporting] = useState(false);
   const containerRef = useRef(null)
   const colorInputRef = useRef(null)
   const navigate = useNavigate();
@@ -124,17 +125,21 @@ export default function EditPage() {
   }
 
   const handleDownload = () => {
-    if (!containerRef.current) return
-    html2canvas(containerRef.current, { useCORS: true }).then(canvas => {
-      const dataUrl = canvas.toDataURL();
-      const link = document.createElement('a')
-      link.download = 'photostrip.png'
-      link.href = dataUrl
-      link.click()
-      // Navigate to Download Page and pass the photostrip dataUrl
-      navigate('/download', { state: { photostripUrl: dataUrl } })
-    })
-  }
+    if (!containerRef.current) return;
+    setIsExporting(true);
+    setTimeout(() => {
+      html2canvas(containerRef.current, { useCORS: true }).then(canvas => {
+        const dataUrl = canvas.toDataURL();
+        const link = document.createElement('a');
+        link.download = 'photostrip.png';
+        link.href = dataUrl;
+        link.click();
+        // Navigate to Download Page and pass the photostrip dataUrl
+        navigate('/download', { state: { photostripUrl: dataUrl } });
+        setIsExporting(false);
+      });
+    }, 50); // allow UI to update
+  };
 
   // Add sticker (drag or click) with rotation property
   const addSticker = (sticker) => {
@@ -392,43 +397,45 @@ export default function EditPage() {
                 }}
               >
                 {/* Canva-style always-visible, rotating handle */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: handleCenterX,
-                    top: handleCenterY,
-                    width: handleSize,
-                    height: handleSize,
-                    background: '#a084e8',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 2px 8px #b39ddb',
-                    border: '2.5px solid #fff',
-                    cursor: 'grab',
-                    zIndex: 20,
-                    pointerEvents: 'auto',
-                    userSelect: 'none',
-                  }}
-                  onMouseDown={e => {
-                    e.stopPropagation();
-                    const containerRect = containerRef.current.getBoundingClientRect();
-                    const centerX = containerRect.left + st.x + st.width / 2;
-                    const centerY = containerRect.top + st.y + st.height / 2;
-                    const startAngle = Math.atan2(e.pageY - centerY, e.pageX - centerX) * 180 / Math.PI;
-                    setRotatingId(st.id);
-                    setRotationStart({
-                      centerX,
-                      centerY,
-                      startAngle,
-                      initialRotation: st.rotation || 0
-                    });
-                    document.body.style.cursor = 'grab';
-                  }}
-                >
-                  <span role="img" aria-label="rotate" style={{ fontSize: 22, color: '#fff', userSelect: 'none', pointerEvents: 'none' }}>⟳</span>
-                </div>
+                {!isExporting && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: handleCenterX,
+                      top: handleCenterY,
+                      width: handleSize,
+                      height: handleSize,
+                      background: '#a084e8',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 2px 8px #b39ddb',
+                      border: '2.5px solid #fff',
+                      cursor: 'grab',
+                      zIndex: 20,
+                      pointerEvents: 'auto',
+                      userSelect: 'none',
+                    }}
+                    onMouseDown={e => {
+                      e.stopPropagation();
+                      const containerRect = containerRef.current.getBoundingClientRect();
+                      const centerX = containerRect.left + st.x + st.width / 2;
+                      const centerY = containerRect.top + st.y + st.height / 2;
+                      const startAngle = Math.atan2(e.pageY - centerY, e.pageX - centerX) * 180 / Math.PI;
+                      setRotatingId(st.id);
+                      setRotationStart({
+                        centerX,
+                        centerY,
+                        startAngle,
+                        initialRotation: st.rotation || 0
+                      });
+                      document.body.style.cursor = 'grab';
+                    }}
+                  >
+                    <span role="img" aria-label="rotate" style={{ fontSize: 22, color: '#fff', userSelect: 'none', pointerEvents: 'none' }}>⟳</span>
+                  </div>
+                )}
                 <div
                   style={{
                     width: '100%',
