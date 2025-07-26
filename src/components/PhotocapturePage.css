@@ -115,3 +115,52 @@
 .preview.pop        { filter: saturate(1.3) contrast(1.4); }
 .preview.neon       { filter: hue-rotate(200deg) saturate(1.4) contrast(1.2); }
 .preview.vintage    { filter: sepia(0.4) contrast(0.8) brightness(1.1); }
+
+@media (max-width: 600px) {
+  .photocapture-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+  }
+  .page-quote {
+    width: 90vw;
+    max-width: 95vw;
+    margin-bottom: 0.7rem;
+  }
+  .preview-wrapper {
+    width: 98vw;
+    max-width: 98vw;
+    aspect-ratio: 4/3;
+    margin-bottom: 1rem;
+  }
+  .preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .controls {
+    width: 98vw;
+    max-width: 98vw;
+    gap: 0.7rem;
+  }
+  .timer-controls, .filter-controls {
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-size: 1.1rem;
+    padding: 0.7rem 1.1rem;
+    min-width: 80px;
+  }
+  .btn.next {
+    width: 100%;
+    font-size: 1.1rem;
+    margin-top: 0.7rem;
+  }
+  .countdown-overlay {
+    font-size: 3rem;
+  }
+}

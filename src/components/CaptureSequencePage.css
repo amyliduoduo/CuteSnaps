@@ -67,4 +67,38 @@
   .dot.active {
     background: #4caf50;
   }
+
+@media (max-width: 600px) {
+  .capture-sequence-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+  }
+  .sequence-preview-wrapper {
+    width: 98vw;
+    max-width: 98vw;
+    aspect-ratio: 4/3;
+    margin-bottom: 1rem;
+  }
+  .preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .sequence-title {
+    font-size: 1.2rem;
+    padding: 0.2rem 0.5rem;
+  }
+  .step-indicator {
+    gap: 0.3rem;
+    margin-top: 0.7rem;
+  }
+  .dot {
+    width: 0.6rem;
+    height: 0.6rem;
+  }
+}
   
