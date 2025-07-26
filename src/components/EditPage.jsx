@@ -134,27 +134,20 @@ export default function EditPage() {
     if (selectedId === id) setSelectedId(null)
   }
 
-  // Fix download for mobile
+  // Download handler - same for all devices
   const handleDownload = () => {
     if (!containerRef.current) return;
     setIsExporting(true);
     setTimeout(() => {
-    html2canvas(containerRef.current, { useCORS: true }).then(canvas => {
-      const dataUrl = canvas.toDataURL();
-        if (isMobile()) {
-          // On mobile, open in new tab and show message
-          const win = window.open();
-          win.document.write('<img src="' + dataUrl + '" style="width:100%;height:auto;"/>');
-          setTimeout(() => setIsExporting(false), 200);
-          alert('Long-press the image and choose "Save Image" to save to your device.');
-        } else {
-          const link = document.createElement('a');
-          link.download = 'photostrip.png';
-          link.href = dataUrl;
-          link.click();
-          navigate('/download', { state: { photostripUrl: dataUrl } });
-          setIsExporting(false);
-        }
+      html2canvas(containerRef.current, { useCORS: true }).then(canvas => {
+        const dataUrl = canvas.toDataURL();
+        // Same behavior for all devices - direct download
+        const link = document.createElement('a');
+        link.download = 'photostrip.png';
+        link.href = dataUrl;
+        link.click();
+        navigate('/download', { state: { photostripUrl: dataUrl } });
+        setIsExporting(false);
       });
     }, 50);
   };
